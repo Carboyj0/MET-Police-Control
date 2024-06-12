@@ -49,6 +49,101 @@
         .login-container form input[type="submit"]:hover {
             background-color: #1f6cb5;
         }
+
+        .sidebar {
+            width: 250px;
+            padding: 20px;
+            background-color: #2980b9;
+            color: white;
+            border-radius: 0 10px 10px 0;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+        .sidebar h2 {
+            margin-top: 0;
+            font-size: 1.5rem;
+        }
+        .sidebar input[type="text"] {
+            width: calc(100% - 90px);
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            box-sizing: border-box;
+            background-color: #fff;
+            color: #333;
+            border: 1px solid #ccc;
+        }
+        .sidebar button {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 0;
+            width: calc(100% - 40px);
+            background-color: #1f6cb5;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+        .sidebar button:hover {
+            background-color: #155d9e;
+        }
+        .tiles-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            align-items: flex-start;
+            padding: 20px;
+        }
+        .tile {
+            width: 250px;
+            margin: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+        }
+        .tile h2 {
+            margin-top: 0;
+            color: #333;
+            font-size: 1.5rem;
+        }
+        .tile .buttons {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+        .tile .button {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            flex-grow: 1;
+            margin: 0 5px;
+            background-color: #1f6cb5;
+            color: white;
+            transition: background-color 0.3s ease;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+        .tile .button:hover {
+            background-color: #155d9e;
+        }
+        .tile .button.red {
+            background-color: #e74c3c;
+        }
+        .tile .button.green {
+            background-color: #2ecc71;
+        }
+        .tile .notes textarea {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
     </style>
 </head>
 <body>
@@ -61,7 +156,7 @@
         </form>
     </div>
 
-    <div class="sidebar" id="sidebar" style="display:none">
+    <div class="sidebar" id="sidebar">
         <h2>Add Callsign</h2>
         <input type="text" id="callsignInput" placeholder="Callsign">
         <button id="addCallsignBtn">Add</button>
@@ -71,7 +166,7 @@
         </div>
     </div>
 
-    <div id="tilesContainer" class="tiles-container" style="display:none">
+    <div id="tilesContainer" class="tiles-container">
         <!-- Tiles will be dynamically added here -->
     </div>
 
@@ -89,7 +184,7 @@
                 <h2>${callsign}</h2>
                 <div class="buttons">
                     <button class="button red">1</button>
-                    <button class="button red">2</button>
+                     <button class="button red">2</button>
                     <button class="button red">3</button>
                     <button class="button red">4</button>
                     <button class="button red">5</button>
@@ -147,10 +242,8 @@
             callsigns = [];
             document.getElementById('callsignList').innerHTML = '';
             document.getElementById('tilesContainer').innerHTML = '';
-            document.getElementById('sidebar').style.display = 'block';
-            document.getElementById('loginForm').style.display = 'block';
-            document.getElementById('tilesContainer').style.display = 'none';
             document.getElementById('sidebar').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
         });
 
         // Function to update callsign list in the sidebar
@@ -174,7 +267,6 @@
             if ((username === 'Admin' || username === 'Control' || username === 'Supervisor') && password === 'METPolice123') {
                 document.getElementById('loginForm').style.display = 'none';
                 document.getElementById('sidebar').style.display = 'block';
-                document.getElementById('tilesContainer').style.display = 'block';
             } else {
                 alert('Invalid username or password!');
             }
@@ -182,7 +274,6 @@
 
         // Initial hide of sidebar
         document.getElementById('sidebar').style.display = 'none';
-        document.getElementById('tilesContainer').style.display = 'none';
     </script>
 </body>
 </html>
