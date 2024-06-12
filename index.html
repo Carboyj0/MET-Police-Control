@@ -3,162 +3,229 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Time Tracker</title>
+    <title>MET Police Dashboard</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #f0f0f0;
-            color: #333;
             margin: 0;
             padding: 0;
             display: flex;
+            justify-content: flex-start;
+            align-items: flex-start;
             min-height: 100vh;
         }
         .sidebar {
-            background-color: #0e2f44; /* Deeper blue color */
-            color: white;
             width: 250px;
             padding: 20px;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            background-color: #2980b9;
+            color: white;
+            border-radius: 0 10px 10px 0;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-        .content {
-            flex: 1;
+        .sidebar h2 {
+            margin-top: 0;
+            font-size: 1.5rem;
+        }
+        .sidebar input[type="text"] {
+            width: calc(100% - 90px);
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            box-sizing: border-box;
+            background-color: #fff;
+            color: #333;
+            border: 1px solid #ccc;
+        }
+        .sidebar button {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 0;
+            width: calc(100% - 40px);
+            background-color: #1f6cb5;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+        .sidebar button:hover {
+            background-color: #155d9e;
+        }
+        .tiles-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            align-items: flex-start;
             padding: 20px;
         }
-        h1, h2, h3 {
-            color: #0e2f44; /* Deeper blue color */
+        .tile {
+            width: 250px;
+            margin: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
         }
-        label {
-            margin-right: 10px;
+        .tile h2 {
+            margin-top: 0;
+            color: #333;
+            font-size: 1.5rem;
         }
-        input, button, textarea {
-            margin: 5px 0;
-            padding: 8px;
-            border: none;
-            border-radius: 4px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        button {
-            background-color: #1a5276; /* Blue color */
-            color: white;
-            cursor: pointer;
-            width: 100%;
-        }
-        button:hover {
-            background-color: #0e2f44; /* Darker shade of blue on hover */
-        }
-        #adminPanel {
+        .tile .buttons {
+            display: flex;
+            justify-content: space-around;
             margin-top: 20px;
-            border-top: 2px solid #0e2f44; /* Deeper blue color */
-            padding-top: 20px;
-            display: none;
         }
-        #adminButtons {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* Adjust min width for tiles */
-            gap: 10px;
+        .tile .button {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            flex-grow: 1;
+            margin: 0 5px;
+            background-color: #1f6cb5;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+        .tile .button:hover {
+            background-color: #155d9e;
+        }
+        .tile .button.red {
+            background-color: #e74c3c;
+        }
+        .tile .button.green {
+            background-color: #2ecc71;
+        }
+        .tile .notes textarea {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
         }
     </style>
 </head>
 <body>
-    <div class="sidebar">
-        <h2>Time Tracker</h2>
-        <label for="username">Username:</label>
-        <input type="text" id="username">
-        <button id="startButton">Start</button>
-        <button id="stopButton">Stop</button>
-    </div>
-    <div class="content">
-        <div id="adminPanel">
-            <h2>Admin Panel</h2>
-            <div id="usersOnline">
-                <h3>Users Online</h3>
-                <!-- Mock data for users online (replace with real data fetching in production) -->
-                <p>User1</p>
-                <p>User2</p>
-                <p>User3</p>
-            </div>
-            <div id="notesSection">
-                <h3>Notes</h3>
-                <textarea id="adminNotes" rows="4" cols="50"></textarea>
-            </div>
-            <div id="adminButtons">
-                <h3>Actions</h3>
-                <button>Button 1</button>
-                <button>Button 2</button>
-                <button>Button 3</button>
-                <button>Button 4</button>
-                <button>Button 5</button>
-                <button>Button 6</button>
-                <button>Button 7</button>
-                <button>Button 8</button>
-                <button>Button 9</button>
-                <button>Button 10</button>
-                <button>Button 11</button>
-                <button>Button 12</button>
-            </div>
+    <div class="sidebar" id="sidebar">
+        <h2>Add Callsign</h2>
+        <input type="text" id="callsignInput" placeholder="Callsign">
+        <button id="addCallsignBtn">Add</button>
+        <button id="logoutBtn">Logout</button>
+        <div id="callsignList">
+            <!-- Callsigns will be dynamically added here -->
         </div>
     </div>
+
+    <div id="tilesContainer" class="tiles-container">
+        <!-- Tiles will be dynamically added here -->
+    </div>
+
     <script>
-        // JavaScript Code
-        let startTime;
-        const webhookUrl = 'YOUR_DISCORD_WEBHOOK_URL';
+        let callsigns = []; // Array to store callsigns
 
-        document.getElementById('startButton').addEventListener('click', () => {
-            startTime = new Date();
-            alert('Timer started');
-        });
-
-        document.getElementById('stopButton').addEventListener('click', () => {
-            if (startTime) {
-                const endTime = new Date();
-                const timeSpent = (endTime - startTime) / 1000; // time in seconds
-                const username = document.getElementById('username').value;
-
-                if (username) {
-                    fetch(webhookUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            username: username,
-                            timeSpent: timeSpent
-                        })
-                    }).then(response => {
-                        if (response.ok) {
-                            alert('Time sent to Discord webhook successfully.');
-                        } else {
-                            alert('Failed to send time to Discord webhook.');
-                        }
-                    }).catch(error => {
-                        console.error('Error:', error);
+        // Function to create a new tile
+        function createTile(callsign) {
+            // Create tile element
+            let tile = document.createElement('div');
+            tile.classList.add('tile');
+            
+            // Tile content
+            tile.innerHTML = `
+                <h2>${callsign}</h2>
+                <div class="buttons">
+                    <button class="button red">1</button>
+                    <button class="button red">2</button>
+                    <button class="button red">3</button>
+                    <button class="button red">4</button>
+                    <button class="button red">5</button>
+                    <button class="button red">6</button>
+                    <button class="button red">7</button>
+                    <button class="button red">8</button>
+                    <button class="button red">9</button>
+                    <button class="button red">10</button>
+                    <button class="button red">11</button>
+                    <button class="button red">12</button>
+                </div>
+                <div class="notes">
+                    <textarea rows="4" placeholder="Notes"></textarea>
+                </div>
+                <button class="deleteBtn">Delete</button>
+            `;
+            
+            // Append tile to tilesContainer
+            document.getElementById('tilesContainer').appendChild(tile);
+            
+            // Add event listeners to buttons inside the tile
+            let buttons = tile.querySelectorAll('.button');
+            buttons.forEach(function(button) {
+                button.addEventListener('click', function() {
+                    buttons.forEach(function(btn) {
+                        btn.classList.remove('green');
+                        btn.classList.add('red');
                     });
-                } else {
-                    alert('Please enter a username.');
-                }
-            } else {
-                alert('Please start the timer first.');
-            }
-
-            // Show admin panel if the user is an admin
-            const adminUsernames = ['Call Center', 'Admin', 'Control'];
-            if (adminUsernames.includes(document.getElementById('username').value)) {
-                document.getElementById('adminPanel').style.display = 'block';
-            }
-        });
-
-        // Handling admin buttons
-        const adminButtons = document.getElementById('adminButtons');
-        adminButtons.querySelectorAll('button').forEach((button, index) => {
-            button.addEventListener('click', () => {
-                alert(`Button ${index + 1} clicked`);
+                    this.classList.remove('red');
+                    this.classList.add('green');
+                });
             });
+            
+            // Add event listener to delete button
+            let deleteBtn = tile.querySelector('.deleteBtn');
+            deleteBtn.addEventListener('click', function() {
+                tile.remove();
+            });
+        }
+
+        // Add callsign button click event
+        document.getElementById('addCallsignBtn').addEventListener('click', function() {
+            let callsign = document.getElementById('callsignInput').value.trim();
+            if (callsign !== '') {
+                callsigns.push(callsign);
+                updateCallsignList();
+                createTile(callsign);
+                document.getElementById('callsignInput').value = '';
+            }
         });
+
+        // Logout button click event
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            // Reset everything to initial state
+            callsigns = [];
+            document.getElementById('callsignList').innerHTML = '';
+            document.getElementById('tilesContainer').innerHTML = '';
+            document.getElementById('sidebar').style.display = 'block';
+        });
+
+        // Function to update callsign list in the sidebar
+        function updateCallsignList() {
+            let callsignListDiv = document.getElementById('callsignList');
+            callsignListDiv.innerHTML = ''; // Clear previous list
+            
+            callsigns.forEach(function(callsign) {
+                let callsignItem = document.createElement('div');
+                callsignItem.classList.add('callsign-item');
+                callsignItem.textContent = callsign;
+                callsignListDiv.appendChild(callsignItem);
+            });
+        }
+
+        // Login form submission
+        document.getElementById('login').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var username = this.username.value;
+            var password = this.password.value;
+            if ((username === 'Admin' || username === 'Control' || username === 'Supervisor') && password === 'METPolice123') {
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('sidebar').style.display = 'block';
+            } else {
+                alert('Invalid username or password!');
+            }
+        });
+
+        // Initial hide of sidebar
+        document.getElementById('sidebar').style.display = 'none';
     </script>
 </body>
 </html>
