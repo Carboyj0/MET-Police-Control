@@ -88,6 +88,8 @@
             background-color: #1f6cb5;
             color: white;
             transition: background-color 0.3s ease;
+            max-width: 100%;
+            box-sizing: border-box;
         }
         .tile .button:hover {
             background-color: #155d9e;
@@ -196,6 +198,7 @@
             document.getElementById('callsignList').innerHTML = '';
             document.getElementById('tilesContainer').innerHTML = '';
             document.getElementById('sidebar').style.display = 'block';
+            document.getElementById('loginForm').style.display = 'block';
         });
 
         // Function to update callsign list in the sidebar
