@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MET Police Login</title>
+    <title>MET Police Dashboard</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -12,8 +12,9 @@
             padding: 0;
             display: flex;
             justify-content: center;
-            align-items: center;
-            height: 100vh;
+            align-items: flex-start;
+            min-height: 100vh;
+            flex-wrap: wrap;
         }
         .container {
             max-width: 400px;
@@ -22,6 +23,7 @@
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             text-align: center;
+            margin: 20px;
         }
         h2 {
             margin-top: 0;
@@ -38,38 +40,85 @@
             box-sizing: border-box;
         }
         .sidebar {
-            display: none;
+            width: 250px;
+            padding: 20px;
+            background-color: #3498db;
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin: 20px;
+        }
+        .sidebar h2 {
+            margin-top: 0;
+            font-size: 1.5rem;
+        }
+        .sidebar input[type="text"] {
+            width: calc(100% - 80px);
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .sidebar button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 5px;
+            background-color: #2980b9;
+            color: white;
+        }
+        .sidebar button:hover {
+            background-color: #1f6cb5;
+        }
+        .tiles-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: flex-start;
         }
         .tile {
-            display: none;
-            margin-top: 20px;
+            width: 250px;
+            margin: 20px;
             background-color: #fff;
             border-radius: 10px;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
             padding: 20px;
             text-align: center;
         }
-        .buttons {
+        .tile h2 {
+            margin-top: 0;
+            color: #333;
+            font-size: 1.5rem;
+        }
+        .tile .buttons {
             display: flex;
             justify-content: space-around;
             margin-top: 20px;
         }
-        .button {
+        .tile .button {
             padding: 10px 20px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            background-color: #2980b9;
+            color: white;
         }
-        .button.red {
-            background-color: #d9534f;
-            color: #fff;
+        .tile .button.red {
+            background-color: #e74c3c;
         }
-        .button.green {
-            background-color: #5cb85c;
-            color: #fff;
+        .tile .button.green {
+            background-color: #2ecc71;
         }
-        .notes {
-            margin-top: 20px;
+        .tile .notes textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
         }
     </style>
 </head>
@@ -84,33 +133,108 @@
     </div>
 
     <div class="sidebar" id="sidebar">
-        <h2>Enter Callsign</h2>
-        <input type="text" id="callsignInput" placeholder="Callsign"><br>
-        <input type="button" value="OK" id="callsignBtn">
+        <h2>Add Callsign</h2>
+        <input type="text" id="callsignInput" placeholder="Callsign">
+        <button id="addCallsignBtn">Add</button>
+        <button id="logoutBtn">Logout</button>
+        <div id="callsignList">
+            <!-- Callsigns will be dynamically added here -->
+        </div>
     </div>
 
-    <div class="tile" id="tile">
-        <h2 id="callsignTitle"></h2>
-        <div class="buttons">
-            <button class="button red">1</button>
-            <button class="button red">2</button>
-            <button class="button red">3</button>
-            <button class="button red">4</button>
-            <button class="button red">5</button>
-            <button class="button red">6</button>
-            <button class="button red">7</button>
-            <button class="button red">8</button>
-            <button class="button red">9</button>
-            <button class="button red">10</button>
-            <button class="button red">11</button>
-            <button class="button red">12</button>
-        </div>
-        <div class="notes">
-            <textarea rows="4" cols="50" placeholder="Notes"></textarea>
-        </div>
+    <div id="tilesContainer" class="tiles-container">
+        <!-- Tiles will be dynamically added here -->
     </div>
 
     <script>
+        let callsigns = []; // Array to store callsigns
+
+        // Function to create a new tile
+        function createTile(callsign) {
+            // Create tile element
+            let tile = document.createElement('div');
+            tile.classList.add('tile');
+            
+            // Tile content
+            tile.innerHTML = `
+                <h2>${callsign}</h2>
+                <div class="buttons">
+                    <button class="button red">1</button>
+                    <button class="button red">2</button>
+                    <button class="button red">3</button>
+                    <button class="button red">4</button>
+                    <button class="button red">5</button>
+                    <button class="button red">6</button>
+                    <button class="button red">7</button>
+                    <button class="button red">8</button>
+                    <button class="button red">9</button>
+                    <button class="button red">10</button>
+                    <button class="button red">11</button>
+                    <button class="button red">12</button>
+                </div>
+                <div class="notes">
+                    <textarea rows="4" placeholder="Notes"></textarea>
+                </div>
+                <button class="deleteBtn">Delete</button>
+            `;
+            
+            // Append tile to tilesContainer
+            document.getElementById('tilesContainer').appendChild(tile);
+            
+            // Add event listeners to buttons inside the tile
+            let buttons = tile.querySelectorAll('.button');
+            buttons.forEach(function(button) {
+                button.addEventListener('click', function() {
+                    buttons.forEach(function(btn) {
+                        btn.classList.remove('green');
+                        btn.classList.add('red');
+                    });
+                    this.classList.remove('red');
+                    this.classList.add('green');
+                });
+            });
+            
+            // Add event listener to delete button
+            let deleteBtn = tile.querySelector('.deleteBtn');
+            deleteBtn.addEventListener('click', function() {
+                tile.remove();
+            });
+        }
+
+        // Add callsign button click event
+        document.getElementById('addCallsignBtn').addEventListener('click', function() {
+            let callsign = document.getElementById('callsignInput').value.trim();
+            if (callsign !== '') {
+                callsigns.push(callsign);
+                updateCallsignList();
+                createTile(callsign);
+                document.getElementById('callsignInput').value = '';
+            }
+        });
+
+        // Logout button click event
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            // Reset everything to initial state
+            callsigns = [];
+            document.getElementById('callsignList').innerHTML = '';
+            document.getElementById('tilesContainer').innerHTML = '';
+            document.getElementById('sidebar').style.display = 'block';
+        });
+
+        // Function to update callsign list in the sidebar
+        function updateCallsignList() {
+            let callsignListDiv = document.getElementById('callsignList');
+            callsignListDiv.innerHTML = ''; // Clear previous list
+            
+            callsigns.forEach(function(callsign) {
+                let callsignItem = document.createElement('div');
+                callsignItem.classList.add('callsign-item');
+                callsignItem.textContent = callsign;
+                callsignListDiv.appendChild(callsignItem);
+            });
+        }
+
+        // Login form submission
         document.getElementById('login').addEventListener('submit', function(event) {
             event.preventDefault();
             var username = this.username.value;
@@ -123,24 +247,8 @@
             }
         });
 
-        document.getElementById('callsignBtn').addEventListener('click', function() {
-            var callsign = document.getElementById('callsignInput').value;
-            document.getElementById('callsignTitle').innerText = callsign;
-            document.getElementById('sidebar').style.display = 'none';
-            document.getElementById('tile').style.display = 'block';
-        });
-
-        var buttons = document.querySelectorAll('.button');
-        buttons.forEach(function(button) {
-            button.addEventListener('click', function() {
-                buttons.forEach(function(btn) {
-                    btn.classList.remove('green');
-                    btn.classList.add('red');
-                });
-                this.classList.remove('red');
-                this.classList.add('green');
-            });
-        });
+        // Initial hide of sidebar
+        document.getElementById('sidebar').style.display = 'none';
     </script>
 </body>
 </html>
